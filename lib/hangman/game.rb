@@ -17,7 +17,10 @@ module Hangman
         puts "Make a guess:"
         guess = gets.chomp.downcase
         if guess == "save"
-          save_game
+          @score.turns_left += 1
+          puts "What should the save game be called?"
+          file_name = gets.chomp
+          save_game(file_name)
         elsif @score.word.include?(guess)
           indexes = []
           @score.word.each_with_index do |character, index|
@@ -40,14 +43,15 @@ module Hangman
     private
 
     def save_game(file_name)
-      @game_file = Gamefile.new(file_name)
-      yaml = YAML::dump(@score)
+      file = File.new("saved_games/" + file_name + ".yaml", "w")
+      file.puts YAML.dump(@score)
     end
 
     def load_game(file_name)
-      @game_file = Gamefile.new(file_name)
-      yaml = @game_file.read
-      YAML::load(yaml)
+      file = File.new("saved_games/" + file_name + ".yaml", "r")
+      yaml = file.read
+      @score = YAML.load(yaml)
+      @score.show_score
     end
   end
 end
