@@ -5,7 +5,6 @@ module Hangman
     def initialize(word)
       @result = Array.new(word.length, "-")
       @word = word.downcase.split(//)
-      puts @word
       @turns_left = 9
       @wrong_characters = []
     end

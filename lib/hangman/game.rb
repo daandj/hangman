@@ -37,6 +37,11 @@ module Hangman
         end
         @score.show_score
         @score.turns_left -= 1
+        if @score.result.none? { |character| character == "-"}
+          puts "Congratulations, you have won!"
+        elsif @score.turns_left == 0
+          puts "Better luck next time"
+        end
       end
     end
 
