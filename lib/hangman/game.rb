@@ -2,6 +2,7 @@ module Hangman
   class Game
     def initialize
       @dictionary = Dictionary.new
+      Dir.mkdir("saved_games") unless Dir.exist?("saved_games")
       puts "Would you like to open a saved game?"
       if gets.chomp == "yes"
         puts "What is the file name?"
