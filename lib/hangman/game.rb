@@ -2,55 +2,52 @@ module Hangman
   class Game
     def initialize
       @dictionary = Dictionary.new
-      @result = Array.new(@dictionary.word.length, "-")
-      @word = @dictionary.word.downcase.split(//)
-      puts @word
-      @turns_left = 9
-      @wrong_characters = []
+      puts "Would you like to open a saved game?"
+      if gets.chomp == "yes"
+        puts "What is the file name?"
+        saved_game = gets.chomp
+        load_game(saved_game)
+      else
+        @score = Score.new(@dictionary.word)
+      end
     end
 
     def start
-      puts "Would you like to open a saved game?"
-      if gets.chomp == "yes" then saved_game = gets.chomp end
-      until @turns_left == 0 || @result.none? { |character| character == "-" }
+      until @score.turns_left == 0 || @score.result.none? { |character| character == "-" }
         puts "Make a guess:"
         guess = gets.chomp.downcase
         if guess == "save"
           save_game
-        elsif @word.include?(guess)
+        elsif @score.word.include?(guess)
           indexes = []
-          @word.each_with_index do |character, index|
+          @score.word.each_with_index do |character, index|
             if character == guess
               indexes << index
             end
           end
           indexes.each do |index|
-            @result[index] = guess
+            @score.result[index] = guess
           end
         else
-          @wrong_characters << guess
+          @score.wrong_characters << guess
           puts "You've guessed wrong"
         end
-        show_score
-        @turns_left -= 1
+        @score.show_score
+        @score.turns_left -= 1
       end
     end
 
     private
 
-    def show_score
-      puts "Score: "
-      puts @result.join
-      puts "Turns left: " + @turns_left.to_s
-      puts "Characters guessed wrong: " + @wrong_characters.join(", ")
+    def save_game(file_name)
+      @game_file = Gamefile.new(file_name)
+      yaml = YAML::dump(@score)
     end
 
-    def save_game
-
-    end
-
-    def load_game
-
+    def load_game(file_name)
+      @game_file = Gamefile.new(file_name)
+      yaml = @game_file.read
+      YAML::load(yaml)
     end
   end
 end
